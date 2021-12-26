@@ -6,11 +6,12 @@ import registerServiceWorker from './registerServiceWorker';
 import 'tachyons'; 
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import { onSearchChange, onRobotRespond } from './reducers';
+import { onSearchChange, onRequestRobots } from './reducers';
 import logger from 'redux-logger'
+import thunk from 'redux-thunk'
 
-const rootReducer = combineReducers({onSearchChange, onRobotRespond})
-let store = createStore(rootReducer, applyMiddleware(logger));
+const rootReducer = combineReducers({onSearchChange, onRequestRobots})
+let store = createStore(rootReducer, applyMiddleware(thunk, logger));
 
 ReactDOM.render(
 	<Provider store={store}>

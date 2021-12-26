@@ -3,36 +3,35 @@ import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
 import ErrorBoundary from '../components/ErrorBoundary';
-import { setSearchField, setRobots } from '../actions';
+import { setSearchField, requestRobots } from '../actions';
 import { connect } from 'react-redux';
 import './App.css';
 
 const mapStateToProps = (state) => ({
   searchField: state.onSearchChange.searchField,
-  robots: state.onRobotRespond.robots,
+  robots: state.onRequestRobots.robots,
+  error: state.onRequestRobots.error,
+  isPending: state.onRequestRobots.isPending,
 })
 
 const mapDispatchToProps = (dispatch) => ({
   onSearchChange: (event) => dispatch(setSearchField(event.target.value)),
-  fetchingRobots: () => {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response=> response.json())
-      .then(users => {dispatch(setRobots(users))})
-      .catch(err => console.log(err));
-  }
+  fetchingRobots: () => dispatch(requestRobots)
 })
 
 const App = (props) => {
-  const { robots, fetchingRobots } = props;
+  const { robots, isPending, error, fetchingRobots } = props;
   const { searchField, onSearchChange } = props;
 
+  // ComponentDidMount
   useEffect(fetchingRobots, [])
 
   const filteredRobots = robots.filter(robot =>{
     return robot.name.toLowerCase().includes(searchField.toLowerCase());
   })
-  return !robots.length ?
+  return isPending ?
     <h1>Loading</h1> :
+    error ? <h1>Failed for fetching robots. Please refresh the page ...</h1> :
     (
       <div className='tc'>
         <h1 className='f1'>RoboFriends</h1>
